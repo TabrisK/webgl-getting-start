@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HelloRectangle</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+</head>
+<body onload="loaded()">
+<div>
+    <canvas id="c" width="500" height="500"></canvas>
+</div>
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec4 a_Position;
+    void main(){
+        gl_Position = a_Position;
+    }
+
+</script>
+<script id="shader-fs" type="x-shader/x-fragment">
+    void main(){
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+
+</script>
+<script src="../lib/detector.js"></script>
+<script src="HelloRectangle.js"></script>
+</body>
+</html>
