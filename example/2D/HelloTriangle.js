@@ -1,17 +1,42 @@
 /**
- * Created by HELEX on 2017/3/13.
+ * Created by zhangjiawei on 2017/4/14.
  */
 var gl, canvas;
 
 function loaded() {
-    if (!detect()) return;
     canvas = document.getElementById("c");
+    if (!detect()) return;
     initGL(canvas);
     initShaders();
+
+    var n = initVertexBuffers(gl);
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.POINTS, 0, 1);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);
 
+}
+
+var g_points = [];
+var g_color = [];
+
+function initVertexBuffers(gl) {
+    var vertices = new Float32Array([
+        -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5
+    ]);
+    var n = 4;
+    var vertexBuffer = gl.createBuffer();
+    !vertexBuffer && console.error("Failed to create vertexBuffer");
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+    a_Position == -1 && console.error("Failed to get a_Position");
+
+    gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(a_Position);
+
+    return n;
 }
 
 function detect() {
@@ -55,7 +80,7 @@ function initShaders() {
     }
 
     gl.useProgram(shaderProgram);
-    
+
     // var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
     // var fragmentPositionUniform = gl.getUniformLocation(shaderProgram, 'aFragmentPosition');
     // gl.enableVertexAttribArray(vertexPositionAttribute);

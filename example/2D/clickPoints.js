@@ -1,16 +1,58 @@
 /**
- * Created by HELEX on 2017/3/13.
+ * Created by zhangjiawei on 2017/3/13.
  */
 var gl, canvas;
 
 function loaded() {
-    if (!detect()) return;
     canvas = document.getElementById("c");
+    if (!detect()) return;
     initGL(canvas);
     initShaders();
+    var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+    a_Position == -1 && console.error("Failed to get a_Position");
+    var u_FragColor = gl.getUniformLocation(gl.program, "u_FragColor");
+    u_FragColor == null && console.error("Failed to get u_FragColor");
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.POINTS, 0, 1);
+
+    canvas.onmousedown = function (e) {
+        click(e, gl, canvas, a_Position, u_FragColor);
+    }
+}
+
+var g_points = [];
+var g_color = [];
+function click(e, gl, canvas, a_Position, u_FragColor) {
+    var rect = e.target.getBoundingClientRect();
+    var cx = (e.clientX - rect.left) / canvas.clientWidth * 2 - 1,
+        cy = 1 - (e.clientY - rect.top) / canvas.clientHeight * 2;
+    g_points.push([cx, cy]);
+    g_color.push(getColor(cx, cy));
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    //gl.vertexAttrib3f(a_Position, cx, cy, 0.0);
+    //gl.drawArrays(gl.POINTS, 0, 1);
+    for (var index = 0; index < g_points.length; index++) {
+        gl.vertexAttrib3f(a_Position, g_points[index][0], g_points[index][1], 0.0);
+        gl.uniform4f(u_FragColor, g_color[index][0], g_color[index][1], g_color[index][2], g_color[index][3]);
+        gl.drawArrays(gl.POINTS, 0, 1);
+    }
+
+    function getColor(x, y) {
+        var color = [1.0, 1.0, 1.0, 1.0];
+        if (x > 0 && y > 0) {
+            color = [1.0, 0.0, 0.0, 1.0];
+        } else if (x < 0 && y > 0) {
+            color = [0.0, 1.0, 0.0, 1.0];
+        } else if (x < 0 && y < 0) {
+            color = [0.0, 0.0, 1.0, 1.0];
+        } else if (x > 0 && y < 0) {
+            color = [1.0, 0.0, 1.0, 1.0];
+        }
+        return color;
+    }
 
 }
 

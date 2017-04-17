@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>HelloPoint</title>
+    <title>HelloTriangle</title>
     <style>
         body {
             margin: 0;
@@ -18,21 +18,20 @@
 <div>
     <canvas id="c" width="500" height="500"></canvas>
 </div>
-<p><b id="msg"></b></p>
 <script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec4 a_Position;
     void main(){
-        gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
-        gl_PointSize = 10.0;
+        gl_Position = a_Position;
     }
 
 </script>
 <script id="shader-fs" type="x-shader/x-fragment">
     void main(){
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
 
 </script>
 <script src="../lib/detector.js"></script>
-<script src="./HelloPoint.js"></script>
+<script src="HelloTriangle.js"></script>
 </body>
 </html>
