@@ -1,59 +1,60 @@
 /**
- * Created by zhangjiawei on 2017/3/13.
+ * Created by zhangjiawei on 2017/4/14.
  */
 var gl, canvas;
+var ANGLE = 60;
+var Tx = .5;
 
 function loaded() {
     canvas = document.getElementById("c");
     if (!detect()) return;
     initGL(canvas);
     initShaders();
-    var a_Position = gl.getAttribLocation(gl.program, "a_Position");
-    a_Position == -1 && console.error("Failed to get a_Position");
-    var u_FragColor = gl.getUniformLocation(gl.program, "u_FragColor");
-    u_FragColor == null && console.error("Failed to get u_FragColor");
+
+    var n = initVertexBuffers(gl);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.LINE_LOOP, 0, n);
 
-    canvas.onmousedown = function (e) {
-        click(e, gl, canvas, a_Position, u_FragColor);
-    }
 }
 
 var g_points = [];
 var g_color = [];
-function click(e, gl, canvas, a_Position, u_FragColor) {
-    var rect = e.target.getBoundingClientRect();
-    var cx = (e.clientX - rect.left) / canvas.clientWidth * 2 - 1,
-        cy = 1 - (e.clientY - rect.top) / canvas.clientHeight * 2;
-    g_points.push([cx, cy]);
-    g_color.push(getColor(cx, cy));
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
 
-    //gl.vertexAttrib3f(a_Position, cx, cy, 0.0);
-    //gl.drawArrays(gl.POINTS, 0, 1);
-    for (var index = 0; index < g_points.length; index++) {
-        gl.vertexAttrib3f(a_Position, g_points[index][0], g_points[index][1], 0.0);
-        gl.uniform4f(u_FragColor, g_color[index][0], g_color[index][1], g_color[index][2], g_color[index][3]);
-        gl.drawArrays(gl.POINTS, 0, 1);
-    }
+function initVertexBuffers(gl) {
+    var vertices = new Float32Array([
+        0, 0.5, -0.5, -0.5, 0.5, -0.5
+    ]);
+    var n = 3;
+    var vertexBuffer = gl.createBuffer();
+    !vertexBuffer && console.error("Failed to create vertexBuffer");
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-    function getColor(x, y) {
-        var color = [1.0, 1.0, 1.0, 1.0];
-        if (x > 0 && y > 0) {
-            color = [1.0, 0.0, 0.0, 1.0];
-        } else if (x < 0 && y > 0) {
-            color = [0.0, 1.0, 0.0, 1.0];
-        } else if (x < 0 && y < 0) {
-            color = [0.0, 0.0, 1.0, 1.0];
-        } else if (x > 0 && y < 0) {
-            color = [1.0, 0.0, 1.0, 1.0];
-        }
-        return color;
-    }
+    var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+    a_Position == -1 && console.error("Failed to get a_Position");
 
+    //旋转角度
+    var radian = Math.PI * ANGLE / 180.0;//转为弧度
+
+    var modelMatrix = new Matrix4();
+
+    //setRotate参数可分为两部分。第一个参数是旋转轴，第二~第四个参数确定旋转轴。此处(0,0,1)表示旋转轴是z轴正方向。
+    // modelMatrix.setTranslate(Tx, 0, 0);//先旋转，后平移。注意矩阵运算法则
+    // modelMatrix.rotate(ANGLE, 0, 0, 1);
+    modelMatrix.setRotate(ANGLE, 0, 0, 1);//先平移，后旋转。注意矩阵运算法则
+    modelMatrix.translate(Tx, 0, 0);
+
+
+    var u_ModelMatrix = gl.getUniformLocation(gl.program, "u_ModelMatrix");
+
+    gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+
+    gl.enableVertexAttribArray(a_Position);
+
+    return n;
 }
 
 function detect() {
@@ -97,7 +98,7 @@ function initShaders() {
     }
 
     gl.useProgram(shaderProgram);
-    
+
     // var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
     // var fragmentPositionUniform = gl.getUniformLocation(shaderProgram, 'aFragmentPosition');
     // gl.enableVertexAttribArray(vertexPositionAttribute);

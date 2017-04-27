@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello Triangle</title>
+    <title>Click Points</title>
     <style>
         body {
             margin: 0;
@@ -22,16 +22,19 @@
     attribute vec4 a_Position;
     void main(){
         gl_Position = a_Position;
+        gl_PointSize = 5.0;
     }
 
 </script>
 <script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+    uniform vec4 u_FragColor;
     void main(){
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        gl_FragColor = u_FragColor;
     }
 
 </script>
 <script src="../lib/detector.js"></script>
-<script src="HelloTriangle.js"></script>
+<script src="ClickPoints.js"></script>
 </body>
 </html>

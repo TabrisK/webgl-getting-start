@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello Triangle</title>
+    <title>Rotated Triangle Matrix4</title>
     <style>
         body {
             margin: 0;
@@ -20,9 +20,10 @@
 </div>
 <script id="shader-vs" type="x-shader/x-vertex">
     attribute vec4 a_Position;
+    uniform mat4 u_xformMatrix;
     void main(){
-        gl_Position = a_Position;
-    }
+        gl_Position = u_xformMatrix * a_Position;
+}
 
 </script>
 <script id="shader-fs" type="x-shader/x-fragment">
@@ -32,6 +33,7 @@
 
 </script>
 <script src="../lib/detector.js"></script>
-<script src="HelloTriangle.js"></script>
+<script src="../lib/cuon-matrix.js"></script>
+<script src="RotatedTriangle_Matrix4.js"></script>
 </body>
 </html>

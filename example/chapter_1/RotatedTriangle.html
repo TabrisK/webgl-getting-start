@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Rotated Triangle</title>
     <style>
         body {
             margin: 0;
@@ -20,21 +20,22 @@
 </div>
 <script id="shader-vs" type="x-shader/x-vertex">
     attribute vec4 a_Position;
+    uniform float u_CosB, u_SinB;
     void main(){
-        gl_Position = a_Position;
-        gl_PointSize = 5.0;
-    }
+        gl_Position.x = a_Position.x * u_CosB - a_Position.y * u_SinB;
+        gl_Position.y = a_Position.x * u_SinB + a_Position.y * u_CosB;
+        gl_Position.z = a_Position.z;
+        gl_Position.w = 1.0;
+}
 
 </script>
 <script id="shader-fs" type="x-shader/x-fragment">
-    precision mediump float;
-    uniform vec4 u_FragColor;
     void main(){
-        gl_FragColor = u_FragColor;
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
 
 </script>
 <script src="../lib/detector.js"></script>
-<script src="clickPoints.js"></script>
+<script src="RotatedTriangle.js"></script>
 </body>
 </html>
